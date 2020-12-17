@@ -1,0 +1,300 @@
+CalculatorController
+=============================
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Calculator.Models;
+
+namespace Calculator.Controllers
+{
+    public class CalculatorController : Controller
+    {
+        private readonly ILogger<CalculatorController> _logger;
+
+        public CalculatorController(ILogger<CalculatorController> logger)
+        {
+            _logger = logger;
+        }
+
+        public IActionResult Index(int firstVal, int secondVal, string operat)
+        {
+            var result = (dynamic)null;
+            var message = "";
+
+            if (!string.IsNullOrEmpty(operat))
+            {
+                switch (operat)
+                {
+                    case "+":
+                        result = firstVal + secondVal;
+                        break;
+                    case "-":
+                        result = firstVal - secondVal;
+                        break;
+                    case "*":
+                        result = firstVal * secondVal;
+                        break;
+                    case "/":
+                        try
+                        {
+                            result = firstVal / secondVal;
+                        }
+                        catch (DivideByZeroException e)
+                        {
+                            Console.WriteLine(e.Message);
+                            message = e.Message;
+                        }
+                        break;
+
+                    default:
+                        result = 0;
+                        break;
+                }
+             
+            }
+            ViewBag.Result = result;
+            ViewBag.Message = message;
+            ViewBag.FirstValue = firstVal;
+            ViewBag.SecondValue = secondVal;
+            ViewBag.Operator = operat;
+            return View();
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            _logger.Log(LogLevel.Error, "errro");
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Index.cshtml
+========================
+@{
+    ViewData["Title"] = "Calculator";
+}
+
+<style>
+    /** {
+        box-sizing: border-box;
+    }*/
+
+    body {
+        background: #f1f3f5;
+        font-family: segoe ui,roboto,oxygen,ubuntu,cantarell,fira sans,droid sans,helvetica neue,sans-serif;
+    }
+
+    .calc container {
+        box-shadow: 0 6px 8px rgba(102,119,136,.03), 0 1px 2px rgba(102,119,136,.3);
+        background-color: #fff;
+        width: 500px;
+        height: auto;
+        margin: 40px auto;
+        padding: 20px 30px 20px 30px;
+    }
+
+        .calc container:first-child > * {
+            padding-left: 40px;
+        }
+
+    .calc h1 {
+        font-weight: 400;
+        margin-bottom: 30px;
+    }
+
+        .calc h1 > span {
+            display: block;
+            font-weight: 400;
+            font-size: 0.9rem;
+            color: #999;
+            margin-top: 0;
+        }
+
+    .calc button, input[type="text"] {
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #f2f2f2;
+        display: inline-block;
+        margin-left: 20px;
+        min-width: 200px;
+    }
+
+    .calc input[type="radio"] {
+        position: relative;
+        top: 2px;
+    }
+
+    .calc button {
+        background-color: #28a745;
+        color: white;
+        font-size: 0.9rem;
+        min-width: auto;
+        padding: 10px 25px 10px 25px;
+    }
+
+    .calc .input-control {
+        margin-bottom: 15px;
+    }
+
+        .calc .input-control.button, .input-control.controls {
+            margin-top: 25px;
+            margin-left: 80px;
+        }
+
+        .calc .input-control.controls {
+            margin-left: 95px;
+            font-size: 0.9rem;
+        }
+
+    .calc .container.result {
+        font-size: 1rem;
+        text-align: left;
+    }
+
+    .calc p.answer {
+        font-size: 6rem;
+        margin: 0;
+        color: #dc3545;
+        font-weight: 300;
+    }
+</style>
+@*<div>
+        <div class="col-md-2">
+        </div>
+        <div class="col-md-6">
+            <form>
+                <div class="form-group">
+                    <label>First Value</label>
+                    <input type="number" class="form-control" id="frstVal" name="firstVal" placeholder="First Value">
+                </div>
+                <div class="form-group">
+                    <label>Second Value</label>
+                    <input type="number" class="form-control" id="scndVal" name="secondVal" placeholder="Second Value">
+                </div>
+                <div class="form-group">
+                    <label>Operation</label>
+                    <input type="text" class="form-control" id="operation" name="operat" placeholder="Operation">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        <div class="col-md-2">
+        </div>
+    </div>
+
+    <div class="">
+
+        @if(!string.IsNullOrEmpty(ViewBag.Message))
+        {
+            <script type="text/javascript">
+
+                window.onload = function () {
+                    alert("@ViewBag.Message");
+                };
+            </script>
+
+        }
+        else
+        {
+            <label>@ViewBag.Result</label>
+        }
+
+    </div>*@
+
+<div class="calc">
+    <div class="container">
+        <h1>  Calculator  </h1>
+        <form>
+            <div class="input-control">
+                <label>
+                    Number 1: <input type="text" id="frstVal" name="firstVal" placeholder="First number" value="@ViewBag.FirstValue" autofocus>
+                </label>
+            </div><!-- /.input-control -->
+
+            <div class="input-control">
+                <label>
+                    Number 2: <input type="text" id="scndVal" name="secondVal" placeholder="Second number" value="@ViewBag.SecondValue">
+                </label>
+            </div><!-- /.input-control -->
+
+            <div class="input-control controls">
+                <label>
+                    <input type="radio" name="operat" id="method_add" value="+" checked>
+                    Add
+                </label>
+                <label for="method_sub">
+                    <input type="radio" name="operat" id="method_sub" value="-">
+                    Subtract
+                </label>
+                <label for="method_mul">
+                    <input type="radio" name="operat" id="method_mul" value="*">
+                    Multiply
+                </label>
+                <label for="method_div">
+                    <input type="radio" name="operat" id="method_div" value="/">
+                    Divide
+                </label>
+            </div><!-- /.input-control -->
+
+
+            <button class="input-control button" type="submit" id="calculate">Calculate</button>
+
+        </form>
+    </div><!-- /.container -->
+
+    <div class="container result">
+        Answer
+        @if (string.IsNullOrEmpty(ViewBag.Message))
+        {
+            <p class="answer">@ViewBag.Result</p>
+        }
+
+    </div>
+
+</div><!-- /.container -->
+
+<script>
+    
+    window.onload = function () {
+        $("input[name=operat][value='@ViewBag.Operator']").prop("checked", true);
+
+        @if (!string.IsNullOrEmpty(ViewBag.Message))
+        {
+                    @:console.log('@ViewBag.Message');
+                   @: alert("@ViewBag.Message");
+
+        };
+    }
+
+</script>
+
+
+
+
+
+
